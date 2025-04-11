@@ -2,8 +2,8 @@ import React from "react";
 import { BrowserRouter,Routes,Route } from "react-router-dom";
 import Home from "./pages/Home";
 import CartPage from "./pages/CartPage";
-import Productos from "./pages/Productos";
-import NavBar from "./components/NavBar";
+import Productos from "./pages/ProductosDetalle";
+import NavBar from "./assets/components/NavBar";
 
 export default function App() {
   return (
