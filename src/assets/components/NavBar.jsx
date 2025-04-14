@@ -1,8 +1,15 @@
 import { User, ShoppingCart } from "lucide-react";
-import React from "react";
+import React,{useState} from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
+import { setSearchTerm } from "../../features/products/ProductSlice";
+
+
 export default function NavBar() {
-  const [isOpen, setIsOpen] = React.useState(false);
+  const [isOpen, setIsOpen] = useState(false);
+
+  const dispatch= useDispatch();
+  const Searchterm = useSelector((state)=> state.product.searchTerm);
 
   const handleUser = () => {
     setIsOpen(!isOpen);
@@ -20,13 +27,13 @@ export default function NavBar() {
                 <Link to="/">Inicio</Link>
               </li>
               <li>
-                <Link to="/">Acerca</Link>
+                <Link to="/acerca">Acerca</Link>
               </li>
               <li>
-                <Link to="/">FAQs</Link>
+                <Link to="/faqs">FAQs</Link>
               </li>
               <li>
-                <Link to="/">Contacto</Link>
+                <Link to="/contacto">Contacto</Link>
               </li>
             </div>
             <div className="relative">
@@ -44,7 +51,7 @@ export default function NavBar() {
                 }
               >
                 <li>
-                  <Link to="/">Iniciar</Link>
+                  <Link to="/login">Iniciar</Link>
                 </li>
                 <li>
                   <Link to="/">Cuenta</Link>
@@ -67,6 +74,8 @@ export default function NavBar() {
               type="text"
               placeholder="Buscar productos"
               className="bg-zinc-100 rounded-md border border-zinc-300 focus:outline-none p-3 w-full"
+              value={Searchterm}
+              onChange={(e)=>dispatch(setSearchTerm(e.target.value))}
             />
           </form>
           <Link to={"/cart"}>

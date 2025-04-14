@@ -10,9 +10,9 @@ export default function ProductoCard({producto}) {
             <h2 className="text-lg font-semibold my-4">
                 {producto.titulo.substring(0, 25)+"..."}
             </h2>
-            <p> {producto.descripcion.substring(0, 75)+"..."}</p>
+            <p className="text-zinc-500 border-b-2 :"> {producto.descripcion.substring(0, 75)+"..."}</p>
             <div className="flex justify-between mt-4 items-center">
-                <p>${producto.precio}</p>
+                <p className="text-xl font-semibold">${producto.precio}</p>
                 <p>Ver Detalle</p>
             </div>
         </div>
