@@ -20,13 +20,13 @@ export default function NavBar() {
                 <Link to="/">Inicio</Link>
               </li>
               <li>
-                <Link to="/">Acerca</Link>
+                <Link to="/acerca">Acerca</Link>
               </li>
               <li>
-                <Link to="/">FAQs</Link>
+                <Link to="/faqs">FAQs</Link>
               </li>
               <li>
-                <Link to="/">Contacto</Link>
+                <Link to="/contacto">Contacto</Link>
               </li>
             </div>
             <div className="relative">
@@ -44,7 +44,7 @@ export default function NavBar() {
                 }
               >
                 <li>
-                  <Link to="/">Iniciar</Link>
+                  <Link to="/login">Iniciar</Link>
                 </li>
                 <li>
                   <Link to="/">Cuenta</Link>
