@@ -5,6 +5,7 @@ import CartPage from "./pages/CartPage";
 import Productos from "./pages/ProductosDetalle";
 import NavBar from "./assets/components/NavBar";
 import Footer from "./assets/components/Footer";
+import Header from "./assets/components/Header";
 import Faqs from "./pages/Faqs";
 import Acerca from "./pages/Acerca";
 import Contacto from "./pages/Contacto";
@@ -17,7 +18,7 @@ export default function App() {
   return (
     <Provider store={store}>
       <BrowserRouter>
-        <NavBar />
+        <Header/> 
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/productos" element={<Productos />} />
