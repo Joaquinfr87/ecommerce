@@ -3,7 +3,6 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Home from "./pages/Home";
 import CartPage from "./pages/CartPage";
 import Productos from "./pages/ProductosDetalle";
-import NavBar from "./assets/components/NavBar";
 import Footer from "./assets/components/Footer";
 import Header from "./assets/components/Header";
 import Faqs from "./pages/Faqs";
@@ -21,7 +20,7 @@ export default function App() {
         <Header/> 
         <Routes>
           <Route path="/" element={<Home />} />
-          <Route path="/productos" element={<Productos />} />
+          <Route path="/productos/:id" element={<Productos />} />
           <Route path="/cart" element={<CartPage />} />
           <Route path="/acerca" element={<Acerca />} />
           <Route path="/faqs" element={<Faqs />} />

@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 
 export default function ProductoCard({producto}) {
   return (
-    <Link>
+    <Link to={`/productos/${producto.id}`}> 
       <div className="shadow-lg rounded-md cursor-pointer mx-5 ">
         <img src={producto.imageURL} className="w-full h-48 object-cover"/>
         <div className="bg-gray-50 p-4 ">
