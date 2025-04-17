@@ -13,7 +13,7 @@ export default function NavBar() {
 
   return (
     <>
-      <nav className="sticky top-0 z-50 flex justify-between items-center container mx-auto py-5 md:py-6 px-2 bg-gray-50 mt-1.5 border border-gray-200 rounded-xl shadow-sm">
+      <nav className="sticky top-0 z-20 flex justify-between items-center container mx-auto py-5 md:py-6 px-2 bg-gray-50 mt-1.5 border border-gray-200 rounded-xl shadow-sm">
         <div className="hidden md:flex items-center ">
           <a
             href="/"

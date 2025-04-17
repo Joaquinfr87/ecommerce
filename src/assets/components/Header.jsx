@@ -28,7 +28,7 @@ export default function Header() {
                 <Link to="/contacto">Contacto</Link>
               </li>
             </div>
-            <div className="relative">
+            <div className="relative z-30">
               <User
                 size={40}
                 className="bg-gray-200 p-2 rounded text-black cursor-pointer"
@@ -38,7 +38,7 @@ export default function Header() {
               <div
                 className={
                   isOpen
-                    ? "flex flex-col absolute right-0 top-12 z-10 bg-zinc-50 p-4 gap-4 shadow-md rounded"
+                    ? "flex flex-col absolute right-0 top-12 z-40 bg-zinc-50 p-4 gap-4 shadow-md rounded"
                     : "hidden"
                 }
               >
