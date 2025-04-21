@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Lock, Mail, Home, LogIn, UserPlus, Key } from 'lucide-react';
-import bannerImage from '../assets/productos/banner.jpg';
+import bannerImage from '../../public/productos/banner.jpg';
 
 export default function Login() {
   const [formData, setFormData] = useState({
@@ -132,13 +132,15 @@ export default function Login() {
               </Link>
             </div>
 
-            <button
-              type="submit"
-              className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 px-4 rounded-lg shadow-md hover:shadow-lg transition-all duration-200 flex justify-center items-center"
-            >
-              <LogIn className="h-4 w-4 mr-2" />
-              Iniciar sesión
-            </button>
+            <Link to="/CRUD">
+              <button
+                type="submit"
+                className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 px-4 rounded-lg shadow-md hover:shadow-lg transition-all duration-200 flex justify-center items-center"
+              >
+                <LogIn className="h-4 w-4 mr-2" />
+                Iniciar sesión
+              </button>
+            </Link>
           </form>
 
           <div className="mt-6 pt-6 border-t border-gray-200">

@@ -1,7 +1,8 @@
-import React from "react";
+import React, { useEffect } from "react";
+import axios from "axios";
 import ProductoGrid from "../assets/components/ProductoGrid";
 import { useDispatch } from "react-redux";
-import { setSelectedCategory } from "../features/products/ProductSlice";
+import { setSelectedCategory,setProducts } from "../features/products/ProductSlice";
 import NavBar from "../assets/components/NavBar";
 const categoria = [
   "All",
@@ -16,8 +17,18 @@ const categoria = [
 export default function Home() {
   const dispatch = useDispatch();
 
+  useEffect(() => {
+    axios.get('http://localhost:4000/productos')  
+      .then(response => {
+        dispatch(setProducts(response.data));  
+      })
+      .catch(error => {
+        console.error('Error al obtener productos:', error);
+      });
+  }, [dispatch]);
   return (
     <>
+    
       <NavBar />
       <div>
         <div className="bg"></div>

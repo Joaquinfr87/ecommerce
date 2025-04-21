@@ -1,4 +1,4 @@
-import {React,useEffect,useState} from "react";
+import React from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Home from "./pages/Home";
 import CartPage from "./pages/CartPage";
@@ -14,19 +14,8 @@ import { Provider } from "react-redux";
 import { store } from "./App/Store";
 import CRUD from "./pages/CRUD";
 
-
-
-
 export default function App() {
-  const [mensaje, setMensaje] = useState('');
-
-  useEffect(() => {
-    fetch('http://localhost:4000/')
-      .then(res => res.json())
-      .then(data => setMensaje(data.message));
-  }, []);
-
-  return (  
+  return (
     <Provider store={store}>
       <BrowserRouter>
         <Header/> 

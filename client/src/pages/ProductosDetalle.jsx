@@ -1,18 +1,29 @@
 import { ShoppingCart } from "lucide-react";
-import React from "react";
-import { useDispatch, useSelector } from "react-redux";
+import React, { useEffect, useState } from "react";
+import { useDispatch } from "react-redux";
 import { Link, useParams } from "react-router-dom";
 import NavBar from "../assets/components/NavBar";
 import { addToCart } from '../features/cart/cartSlice';
+import axios from 'axios';
 
 export default function ProductosDetalle() {
-  const { id } = useParams();
+  const { id } = useParams(); // Obtener el ID del producto de la URL
   const dispatch = useDispatch();
+  
+  const [product, setProduct] = useState(null); // Inicializamos el estado para el producto
 
-  const product = useSelector((state) =>
-    state.product.items.find((p) => p.id === parseInt(id))
-  );
+  useEffect(() => {
+    // Obtener el producto desde el backend
+    axios.get(`http://localhost:4000/productos/${id}`)
+      .then(response => {
+        setProduct(response.data); // Guardamos el producto en el estado
+      })
+      .catch(error => {
+        console.error('Error al obtener el producto:', error);
+      });
+  }, [id]); // Solo se ejecutará cuando el id cambie
 
+  // Si no hay producto, mostramos un mensaje
   if (!product) {
     return (
       <div className="container mx-auto px-4 py-8">
@@ -51,8 +62,10 @@ export default function ProductosDetalle() {
                 {product.categoria}
               </span>
             </div>
-            <button className="w-full md:w-auto  bg-zinc-200 px-8 py-3 rounded-md flex items-center justify-center gap-2 hover:bg-zinc-300"
-            onClick={()=> dispatch(addToCart(product))}>
+            <button 
+              className="w-full md:w-auto bg-zinc-200 px-8 py-3 rounded-md flex items-center justify-center gap-2 hover:bg-zinc-300"
+              onClick={() => dispatch(addToCart(product))}
+            >
               <ShoppingCart />
               Añadir al carrito
             </button>
