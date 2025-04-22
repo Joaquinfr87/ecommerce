@@ -1,5 +1,5 @@
 import { useState } from 'react';
-
+import { Link } from 'react-router-dom'; 
 export default function Faqs() {
   const [activeIndex, setActiveIndex] = useState(null);
 
@@ -81,9 +81,11 @@ export default function Faqs() {
         
         <div className="mt-12 text-center">
           <p className="text-gray-600 mb-4">¿No encontraste lo que buscabas?</p>
+          <Link to="/contacto">
           <button className="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
             Contáctanos
           </button>
+          </Link>
         </div>
       </div>
     </div>
