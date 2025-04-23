@@ -18,19 +18,23 @@ export default function App() {
   return (
     <Provider store={store}>
       <BrowserRouter>
-        <Header/> 
-        <Routes>
-          <Route path="/crud" element={<CRUD/>}></Route>
-          <Route path="/" element={<Home />} />
-          <Route path="/productos/:id" element={<Productos />} />
-          <Route path="/cart" element={<CartPage />} />
-          <Route path="/acerca" element={<Acerca />} />
-          <Route path="/faqs" element={<Faqs />} />
-          <Route path="/contacto" element={<Contacto />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
-        </Routes>
-        <Footer />
+        <div className="flex flex-col min-h-screen">
+          <Header />
+          <main className="flex-grow">
+            <Routes>
+              <Route path="/crud" element={<CRUD />}></Route>
+              <Route path="/" element={<Home />} />
+              <Route path="/productos/:id" element={<Productos />} />
+              <Route path="/cart" element={<CartPage />} />
+              <Route path="/acerca" element={<Acerca />} />
+              <Route path="/faqs" element={<Faqs />} />
+              <Route path="/contacto" element={<Contacto />} />
+              <Route path="/login" element={<Login />} />
+              <Route path="/register" element={<Register />} />
+            </Routes>
+          </main>
+          <Footer />
+        </div>
       </BrowserRouter>
     </Provider>
   );
