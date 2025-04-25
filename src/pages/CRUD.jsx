@@ -1,152 +1,258 @@
-import React, { useEffect, useState } from 'react';
-import axios from 'axios';
+import { useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
+import { 
+  X, 
+  Save, 
+  Image as ImageIcon,
+  Type,
+  DollarSign,
+  List,
+  FileText
+} from "lucide-react";
+import { 
+  createProducto, 
+  updateProducto,
+  getAllProductos
+} from "../api/productoAPI";
 
-const API_URL = 'http://localhost:4000/productos';
+export default function CRUD({ onClose, dataSelect, accion }) {
+  const [previewImage, setPreviewImage] = useState(null);
+  const [categorias, setCategorias] = useState([]);
+  const [loading, setLoading] = useState(false);
 
-const CRUD = () => {
-  const [productos, setProductos] = useState([]);
-  const [form, setForm] = useState({ titulo: '', precio: '', categoria: '', descripcion: '', imageURL: '' });
-  const [editandoId, setEditandoId] = useState(null);
-
-  const obtenerProductos = async () => {
-    try {
-      const res = await axios.get(API_URL);
-      setProductos(res.data);
-    } catch (error) {
-      console.error('Error al obtener productos:', error);
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    setValue,
+    watch
+  } = useForm({
+    defaultValues: {
+      titulo: "",
+      precio: 0,
+      categoria: "",
+      descripcion: "",
+      imageURL: ""
     }
-  };
+  });
 
   useEffect(() => {
-    obtenerProductos();
-  }, []);
-
-  const manejarCambio = (e) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
-  };
-
-  const manejarSubmit = async (e) => {
-    e.preventDefault();
-    try {
-      if (editandoId) {
-        await axios.put(`${API_URL}/${editandoId}`, form);
-        setEditandoId(null);
-      } else {
-        await axios.post(API_URL, form);
+    // Cargar categorías al montar el componente
+    const fetchCategorias = async () => {
+      try {
+        const response = await getAllProductos();
+        setCategorias(response.data);
+      } catch (error) {
+        console.error("Error al cargar Productos:", error);
       }
-      setForm({ titulo: '', precio: '', categoria: '', descripcion: '', imageURL: '' });
-      obtenerProductos();
-    } catch (error) {
-      console.error('Error al guardar producto:', error);
+    };
+    
+    fetchCategorias();
+
+    // Si es edición, cargar datos del producto seleccionado
+    if (accion === "Editar" && dataSelect) {
+      setValue("titulo", dataSelect.titulo);
+      setValue("precio", dataSelect.precio);
+      setValue("categoria", dataSelect.categoria?.id);
+      setValue("descripcion", dataSelect.descripcion);
+      setValue("imageURL", dataSelect.imageURL);
+      setPreviewImage(dataSelect.imageURL);
+    }
+  }, [dataSelect, accion, setValue]);
+
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setPreviewImage(reader.result);
+      };
+      reader.readAsDataURL(file);
+      setValue("imageURL", file);
     }
   };
 
-  const manejarEditar = (producto) => {
-    setForm(producto);
-    setEditandoId(producto._id);
-  };
-
-  const manejarEliminar = async (id) => {
+  const onSubmit = async (data) => {
+    setLoading(true);
     try {
-      await axios.delete(`${API_URL}/${id}`);
-      obtenerProductos();
+      const formData = new FormData();
+      formData.append("titulo", data.titulo);
+      formData.append("precio", data.precio);
+      formData.append("categoria", data.categoria);
+      formData.append("descripcion", data.descripcion);
+      
+      if (data.imageURL instanceof File) {
+        formData.append("imagen", data.imageURL);
+      } else if (data.imageURL) {
+        formData.append("imageURL", data.imageURL);
+      }
+
+      if (accion === "Editar") {
+        await updateProducto(dataSelect.id, formData);
+      } else {
+        await createProducto(formData);
+      }
+      
+      onClose(true); // Pasamos true para indicar éxito
     } catch (error) {
-      console.error('Error al eliminar producto:', error);
+      console.error("Error al guardar el producto:", error);
+      // Aquí podrías mostrar un mensaje de error al usuario
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <div className="max-w-5xl mx-auto p-6">
-      <h1 className="text-3xl font-bold text-center mb-6">CRUD de Productos</h1>
-
-      {/* Formulario */}
-      <form onSubmit={manejarSubmit} className="bg-white shadow-md rounded-lg p-6 mb-10 space-y-4">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <input
-            className="border p-2 rounded"
-            type="text"
-            name="titulo"
-            placeholder="Título"
-            value={form.titulo}
-            onChange={manejarCambio}
-            required
-          />
-          <input
-            className="border p-2 rounded"
-            type="number"
-            name="precio"
-            placeholder="Precio"
-            value={form.precio}
-            onChange={manejarCambio}
-            required
-          />
-          <input
-            className="border p-2 rounded"
-            type="text"
-            name="categoria"
-            placeholder="Categoría"
-            value={form.categoria}
-            onChange={manejarCambio}
-            required
-          />
-          <input
-            className="border p-2 rounded"
-            type="text"
-            name="imageURL"
-            placeholder="URL de la imagen"
-            value={form.imageURL}
-            onChange={manejarCambio}
-          />
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+      <div className="bg-white dark:bg-gray-800 rounded-xl w-full max-w-md p-6">
+        <div className="flex justify-between items-center mb-4">
+          <h2 className="text-xl font-semibold dark:text-white">
+            {accion === "Editar" ? "Editar Producto" : "Nuevo Producto"}
+          </h2>
+          <button 
+            onClick={() => onClose(false)}
+            className="text-gray-500 hover:text-gray-700 dark:hover:text-gray-300"
+          >
+            <X size={24} />
+          </button>
         </div>
-        <textarea
-          className="border p-2 rounded w-full"
-          name="descripcion"
-          placeholder="Descripción"
-          value={form.descripcion}
-          onChange={manejarCambio}
-          required
-        />
-        <button type="submit" className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
-          {editandoId ? 'Actualizar' : 'Crear'}
-        </button>
-      </form>
 
-      {/* Lista de productos */}
-      {productos.length === 0 ? (
-        <p className="text-center text-gray-500">No hay productos disponibles.</p>
-      ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {productos.map((producto) => (
-            <div key={producto._id} className="bg-white shadow-md rounded-lg p-4 space-y-2">
-              <img
-                src={producto.imageURL}
-                alt={producto.titulo}
-                className="w-full h-48 object-cover rounded"
-              />
-              <h2 className="text-xl font-semibold">{producto.titulo}</h2>
-              <p className="text-gray-700">Precio: ${producto.precio}</p>
-              <p className="text-gray-700">Categoría: {producto.categoria}</p>
-              <p className="text-gray-600 text-sm">{producto.descripcion}</p>
-              <div className="flex gap-2 mt-2">
-                <button
-                  onClick={() => manejarEditar(producto)}
-                  className="bg-yellow-500 text-white px-3 py-1 rounded hover:bg-yellow-600"
-                >
-                  Editar
-                </button>
-                <button
-                  onClick={() => manejarEliminar(producto._id)}
-                  className="bg-red-600 text-white px-3 py-1 rounded hover:bg-red-700"
-                >
-                  Eliminar
-                </button>
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+          {/* Campo Título */}
+          <div>
+            <label className="block text-sm font-medium mb-1 dark:text-gray-300">
+              Título
+            </label>
+            <div className="relative">
+              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <Type size={18} className="text-gray-400" />
               </div>
+              <input
+                type="text"
+                className="pl-10 w-full rounded-lg border border-gray-300 dark:border-gray-600 p-2 dark:bg-gray-700 dark:text-white"
+                {...register("titulo", { required: "Este campo es requerido" })}
+              />
             </div>
-          ))}
-        </div>
-      )}
+            {errors.titulo && (
+              <p className="text-red-500 text-xs mt-1">{errors.titulo.message}</p>
+            )}
+          </div>
+
+          {/* Campo Precio */}
+          <div>
+            <label className="block text-sm font-medium mb-1 dark:text-gray-300">
+              Precio
+            </label>
+            <div className="relative">
+              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <DollarSign size={18} className="text-gray-400" />
+              </div>
+              <input
+                type="number"
+                step="0.01"
+                className="pl-10 w-full rounded-lg border border-gray-300 dark:border-gray-600 p-2 dark:bg-gray-700 dark:text-white"
+                {...register("precio", { 
+                  required: "Este campo es requerido",
+                  min: { value: 0.01, message: "El precio debe ser mayor a 0" }
+                })}
+              />
+            </div>
+            {errors.precio && (
+              <p className="text-red-500 text-xs mt-1">{errors.precio.message}</p>
+            )}
+          </div>
+
+          {/* Campo Categoría */}
+          <div>
+            <label className="block text-sm font-medium mb-1 dark:text-gray-300">
+              Categoría
+            </label>
+            <div className="relative">
+              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <List size={18} className="text-gray-400" />
+              </div>
+              <select
+                className="pl-10 w-full rounded-lg border border-gray-300 dark:border-gray-600 p-2 dark:bg-gray-700 dark:text-white"
+                {...register("categoria", { required: "Seleccione una categoría" })}
+              >
+                <option value="">Seleccione una categoría</option>
+                {categorias.map((cat) => (
+                  <option key={cat.id} value={cat.id}>
+                    {cat.descripcion}
+                  </option>
+                ))}
+              </select>
+            </div>
+            {errors.categoria && (
+              <p className="text-red-500 text-xs mt-1">{errors.categoria.message}</p>
+            )}
+          </div>
+
+          {/* Campo Descripción */}
+          <div>
+            <label className="block text-sm font-medium mb-1 dark:text-gray-300">
+              Descripción
+            </label>
+            <div className="relative">
+              <div className="absolute inset-y-0 left-0 pl-3 pt-2 flex items-start pointer-events-none">
+                <FileText size={18} className="text-gray-400" />
+              </div>
+              <textarea
+                rows={3}
+                className="pl-10 w-full rounded-lg border border-gray-300 dark:border-gray-600 p-2 dark:bg-gray-700 dark:text-white"
+                {...register("descripcion")}
+              />
+            </div>
+          </div>
+
+          {/* Campo Imagen */}
+          <div>
+            <label className="block text-sm font-medium mb-1 dark:text-gray-300">
+              Imagen
+            </label>
+            <div className="relative">
+              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <ImageIcon size={18} className="text-gray-400" />
+              </div>
+              <input
+                type="file"
+                accept="image/*"
+                className="pl-10 w-full rounded-lg border border-gray-300 dark:border-gray-600 p-2 dark:bg-gray-700 dark:text-white"
+                onChange={handleImageChange}
+              />
+            </div>
+            {previewImage && (
+              <div className="mt-2">
+                <img 
+                  src={previewImage} 
+                  alt="Preview" 
+                  className="h-32 object-cover rounded-lg"
+                />
+              </div>
+            )}
+          </div>
+
+          {/* Botón Guardar */}
+          <div className="pt-2">
+            <button
+              type="submit"
+              disabled={loading}
+              className={`flex items-center justify-center w-full ${
+                loading ? 'bg-blue-400' : 'bg-blue-600 hover:bg-blue-700'
+              } text-white py-2 px-4 rounded-lg transition`}
+            >
+              {loading ? (
+                'Guardando...'
+              ) : (
+                <>
+                  <Save size={18} className="mr-2" />
+                  Guardar
+                </>
+              )}
+            </button>
+          </div>
+        </form>
+      </div>
     </div>
   );
-};
-
-export default CRUD;
+}

@@ -12,9 +12,10 @@ import Login from "./pages/Login";
 import Register from "./pages/Register";
 import { Provider } from "react-redux";
 import { store } from "./App/Store";
-import CRUD from "./pages/CRUD";
+import TablaCrud from "./pages/TablaCrud";
 import LoadingSpinner from "./assets/components/LoadingSpinner";
 import ErrorMessage from "./assets/components/ErrorMessage";
+
 
 function AppContent() {
   const location = useLocation();
@@ -67,7 +68,7 @@ function AppContent() {
     <>
       {showHeader && <Header />}
       <Routes>
-        <Route path="/crud" element={<CRUD />} />
+        <Route path="/TablaCrud" element={<TablaCrud />} />
         <Route path="/" element={<Home />} />
         <Route path="/productos/:id" element={<Productos />} />
         <Route path="/cart" element={<CartPage />} />
