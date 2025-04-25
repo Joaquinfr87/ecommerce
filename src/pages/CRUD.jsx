@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-
+import LogoutButton from '../assets/components/LogoutButton'; 
 const API_URL = 'http://localhost:4000/productos';
 
 const CRUD = () => {
@@ -145,6 +145,7 @@ const CRUD = () => {
           ))}
         </div>
       )}
+      <LogoutButton/>
     </div>
   );
 };

@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import axios from "axios";
+import { getAllProductos } from "../api/productoAPI";
 import ProductoGrid from "../assets/components/ProductoGrid";
 import { useDispatch } from "react-redux";
 import { setSelectedCategory,setProducts } from "../features/products/ProductSlice";
@@ -18,7 +18,7 @@ export default function Home() {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    axios.get('http://localhost:4000/productos')  
+    getAllProductos()  
       .then(response => {
         dispatch(setProducts(response.data));  
       })

@@ -13,6 +13,7 @@ import Register from "./pages/Register";
 import { Provider } from "react-redux";
 import { store } from "./App/Store";
 import CRUD from "./pages/CRUD";
+import ProtectedRoute from "./utils/ProtectedRoute";
 
 export default function App() {
   return (
@@ -22,7 +23,14 @@ export default function App() {
           <Header />
           <main className="flex-grow">
             <Routes>
-              <Route path="/crud" element={<CRUD />}></Route>
+              <Route
+                path="/crud"
+                element={
+                  <ProtectedRoute>
+                    <CRUD />
+                  </ProtectedRoute>
+                }
+              />
               <Route path="/" element={<Home />} />
               <Route path="/productos/:id" element={<Productos />} />
               <Route path="/cart" element={<CartPage />} />
@@ -33,6 +41,8 @@ export default function App() {
               <Route path="/register" element={<Register />} />
             </Routes>
           </main>
+
+          
           <Footer />
         </div>
       </BrowserRouter>
