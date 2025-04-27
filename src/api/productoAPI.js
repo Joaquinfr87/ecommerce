@@ -1,3 +1,4 @@
+
 import axios from 'axios';
 
 const API_URL = 'http://localhost:4000/productos';
@@ -80,3 +81,4 @@ export const deleteProducto = async (id) => {
     throw error;
   }
 };
+

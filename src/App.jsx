@@ -14,9 +14,10 @@ import { Provider } from "react-redux";
 import { store } from "./App/Store";
 import LoadingSpinner from "./assets/components/LoadingSpinner";
 import ErrorMessage from "./assets/components/ErrorMessage";
-import TablaCrud from "./pages/TablaCrud";
 import ProductoManager from "./assets/components/ProductoManager";
 import Sidebar from "./assets/components/Sidebar";
+import CRUD from "./pages/CRUD";
+import ProtectedRoute from "./utils/ProtectedRoute";
 
 function AppContent() {
   const location = useLocation();
@@ -73,8 +74,22 @@ function AppContent() {
           className={`flex-grow transition-all ${location.pathname === "/crud" ? "pl-[220px]" : ""}`}
         >
           <Routes>
-            <Route path="/crud" element={<ProductoManager />} />
-            <Route path="/TablaCrud" element={<TablaCrud />} />
+            <Route
+              path="/crud"
+              element={
+                <ProtectedRoute>
+                  <ProductoManager />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/TablaCrud"
+              element={
+                <ProtectedRoute>
+                  <CRUD />
+                </ProtectedRoute>
+              }
+            />
             <Route path="/" element={<Home />} />
             <Route path="/productos/:id" element={<Productos />} />
             <Route path="/cart" element={<CartPage />} />

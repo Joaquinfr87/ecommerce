@@ -1,18 +1,23 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { User, Mail, Lock, Phone } from 'lucide-react';
+import { useDispatch, useSelector } from 'react-redux';
+import { register } from '../features/auth/authSlice'; 
 
 export default function Register() {
   const [formData, setFormData] = useState({
-    name: '',
+    nombre: '',
     email: '',
-    phone: '',
+    telefono: '',
     password: '',
     confirmPassword: ''
   });
 
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const dispatch = useDispatch();
+  const { status, error } = useSelector(state => state.auth); // Obtener el estado de auth desde el store
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -24,9 +29,9 @@ export default function Register() {
 
   const validate = () => {
     const newErrors = {};
-    if (!formData.name) newErrors.name = 'El nombre es requerido';
+    if (!formData.nombre) newErrors.nombre = 'El nombre es requerido';
     if (!formData.email) newErrors.email = 'El email es requerido';
-    if (!formData.phone) newErrors.phone = 'El teléfono es requerido';
+    if (!formData.telefono) newErrors.telefono = 'El teléfono es requerido';
     if (!formData.password) newErrors.password = 'La contraseña es requerida';
     if (formData.password !== formData.confirmPassword) {
       newErrors.confirmPassword = 'Las contraseñas no coinciden';
@@ -43,9 +48,8 @@ export default function Register() {
     }
 
     setIsSubmitting(true);
-    setTimeout(() => {
-      setIsSubmitting(false);
-    }, 1500);
+    await dispatch(register(formData)); // Despachar la acción para registrar al usuario
+    setIsSubmitting(false);
   };
 
   return (
@@ -69,21 +73,21 @@ export default function Register() {
                 Nombre completo
               </label>
               <input
-                id="name"
-                name="name"
+                id="nombre"
+                name="nombre"
                 type="text"
                 autoComplete="name"
-                value={formData.name}
+                value={formData.nombre}
                 onChange={handleChange}
-                className={`block w-full px-4 py-3 rounded-lg border ${errors.name ? 'border-red-300 text-red-900 placeholder-red-300 focus:ring-red-500' : 'border-gray-300 focus:ring-blue-500'} focus:outline-none focus:ring-2 focus:ring-opacity-50 shadow-sm`}
+                className={`block w-full px-4 py-3 rounded-lg border ${errors.nombre ? 'border-red-300 text-red-900 placeholder-red-300 focus:ring-red-500' : 'border-gray-300 focus:ring-blue-500'} focus:outline-none focus:ring-2 focus:ring-opacity-50 shadow-sm`}
                 placeholder="Tu nombre completo"
               />
-              {errors.name && (
+              {errors.nombre && (
                 <p className="mt-1 text-sm text-red-600 flex items-center">
                   <svg className="h-4 w-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
                     <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
                   </svg>
-                  {errors.name}
+                  {errors.nombre}
                 </p>
               )}
             </div>
@@ -119,21 +123,21 @@ export default function Register() {
                 Teléfono
               </label>
               <input
-                id="phone"
-                name="phone"
+                id="telefono"
+                name="telefono"
                 type="tel"
                 autoComplete="tel"
-                value={formData.phone}
+                value={formData.telefono}
                 onChange={handleChange}
-                className={`block w-full px-4 py-3 rounded-lg border ${errors.phone ? 'border-red-300 text-red-900 placeholder-red-300 focus:ring-red-500' : 'border-gray-300 focus:ring-blue-500'} focus:outline-none focus:ring-2 focus:ring-opacity-50 shadow-sm`}
+                className={`block w-full px-4 py-3 rounded-lg border ${errors.telefono ? 'border-red-300 text-red-900 placeholder-red-300 focus:ring-red-500' : 'border-gray-300 focus:ring-blue-500'} focus:outline-none focus:ring-2 focus:ring-opacity-50 shadow-sm`}
                 placeholder="+51 123 456 789"
               />
-              {errors.phone && (
+              {errors.telefono && (
                 <p className="mt-1 text-sm text-red-600 flex items-center">
                   <svg className="h-4 w-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
                     <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
                   </svg>
-                  {errors.phone}
+                  {errors.telefono}
                 </p>
               )}
             </div>
@@ -188,62 +192,24 @@ export default function Register() {
               )}
             </div>
 
-            <div className="flex items-start">
-              <div className="flex items-center h-5">
-                <input
-                  id="terms"
-                  name="terms"
-                  type="checkbox"
-                  className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-                  required
-                />
-              </div>
-              <div className="ml-3 text-sm">
-                <label htmlFor="terms" className="text-gray-700">
-                  Acepto los{' '}
-                  <a href="#" className="text-blue-600 hover:text-blue-500 font-medium">
-                    Términos y Condiciones
-                  </a>{' '}
-                  y la{' '}
-                  <a href="#" className="text-blue-600 hover:text-blue-500 font-medium">
-                    Política de Privacidad
-                  </a>
-                </label>
-              </div>
-            </div>
+            <button
+              type="submit"
+              className="w-full py-3 px-4 text-sm font-semibold text-white bg-blue-600 rounded-lg shadow-md hover:bg-blue-700 disabled:bg-gray-400"
+              disabled={isSubmitting || status === 'loading'}
+            >
+              {status === 'loading' ? 'Registrando...' : 'Crear cuenta'}
+            </button>
 
-            <div>
-              <button
-                type="submit"
-                disabled={isSubmitting}
-                className={`w-full flex justify-center items-center py-3 px-4 border border-transparent rounded-xl shadow-md text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all duration-200 ${isSubmitting ? 'opacity-80 cursor-not-allowed' : 'hover:shadow-lg'}`}
-              >
-                {isSubmitting ? (
-                  <>
-                    <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                    </svg>
-                    Creando cuenta...
-                  </>
-                ) : (
-                  <>
-                    <User className="h-4 w-4 mr-2" />
-                    Registrarme
-                  </>
-                )}
-              </button>
+            {error && (
+              <p className="text-sm text-red-600 mt-2 text-center">{error}</p>
+            )}
+
+            <div className="mt-4 text-center">
+              <Link to="/login" className="text-sm text-blue-600 hover:text-blue-800">
+                Ya tienes una cuenta? Inicia sesión
+              </Link>
             </div>
           </form>
-
-          <div className="mt-6 text-center text-sm">
-            <p className="text-gray-500">
-              ¿Ya tienes una cuenta?{' '}
-              <Link to="/login" className="font-medium text-blue-600 hover:text-blue-500">
-                Inicia sesión
-              </Link>
-            </p>
-          </div>
         </div>
       </div>
     </div>

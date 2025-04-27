@@ -1,7 +1,9 @@
-import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { useState,useEffect } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import { Lock, Mail, Home, LogIn, UserPlus, Key } from 'lucide-react';
 import bannerImage from '../../public/productos/banner.jpg';
+import { useDispatch, useSelector } from 'react-redux';
+import { login } from '../features/auth/authSlice'; 
 
 export default function Login() {
   const [formData, setFormData] = useState({
@@ -12,10 +14,19 @@ export default function Login() {
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  const dispatch = useDispatch();
+  const navigate = useNavigate(); // Para redirigir después de iniciar sesión
+  const { isLogged, status, error } = useSelector((state) => state.auth); 
+
+  useEffect(() => {
+    if (isLogged) {
+      navigate('/CRUD');
+    }
+  }, [isLogged, navigate]);
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
-    // Limpiar errores al escribir
     if (errors[name]) {
       setErrors(prev => ({ ...prev, [name]: '' }));
     }
@@ -37,15 +48,16 @@ export default function Login() {
     }
 
     setIsSubmitting(true);
-    // Aquí iría la lógica real de autenticación
-    console.log('Datos de login:', formData);
-    // Simulamos un retraso de red
-    setTimeout(() => {
+    try {
+      await dispatch(login(formData)); // Ejecutamos la acción de login
+    } catch (error) {
+      console.error('Error al hacer login:', error); // Si ocurre un error, lo mostramos en consola
+    } finally {
       setIsSubmitting(false);
-      // Aquí manejarías la respuesta del servidor
-    }, 1500);
+    }
   };
 
+  
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50 flex items-center justify-center p-4">
       {/* Contenedor principal */}
@@ -91,7 +103,7 @@ export default function Login() {
             <p className="text-gray-500 mt-2">Ingresa tus credenciales para continuar</p>
           </div>
 
-          <form className="space-y-5">
+          <form className="space-y-5" onSubmit={handleSubmit}>
             <div className="space-y-1">
               <label className="block text-sm font-medium text-gray-700 flex items-center">
                 <Mail className="h-4 w-4 mr-2 text-gray-500" />
@@ -99,9 +111,13 @@ export default function Login() {
               </label>
               <input
                 type="email"
+                name="email"
+                value={formData.email}
+                onChange={handleChange}
                 className="block w-full px-4 py-3 rounded-lg border border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500"
                 placeholder="tu@email.com"
               />
+              {errors.email && <p className="text-sm text-red-500">{errors.email}</p>}
             </div>
 
             <div className="space-y-1">
@@ -111,9 +127,13 @@ export default function Login() {
               </label>
               <input
                 type="password"
+                name="password"
+                value={formData.password}
+                onChange={handleChange}
                 className="block w-full px-4 py-3 rounded-lg border border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500"
                 placeholder="••••••••"
               />
+              {errors.password && <p className="text-sm text-red-500">{errors.password}</p>}
             </div>
 
             <div className="flex items-center justify-between">
@@ -132,15 +152,13 @@ export default function Login() {
               </Link>
             </div>
 
-            <Link to="/CRUD">
-              <button
-                type="submit"
-                className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 px-4 rounded-lg shadow-md hover:shadow-lg transition-all duration-200 flex justify-center items-center"
-              >
-                <LogIn className="h-4 w-4 mr-2" />
-                Iniciar sesión
-              </button>
-            </Link>
+            <button
+              type="submit"
+              disabled={isSubmitting}
+              className={`w-full bg-blue-600 hover:bg-blue-700 text-white py-3 px-4 rounded-lg shadow-md hover:shadow-lg transition-all duration-200 flex justify-center items-center ${isSubmitting ? 'opacity-50 cursor-not-allowed' : ''}`}
+            >
+              {isSubmitting ? 'Iniciando sesión...' : <><LogIn className="h-4 w-4 mr-2" /> Iniciar sesión</>}
+            </button>
           </form>
 
           <div className="mt-6 pt-6 border-t border-gray-200">

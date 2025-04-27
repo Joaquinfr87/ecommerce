@@ -1,3 +1,4 @@
+
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { X, Save } from "lucide-react";
@@ -11,6 +12,7 @@ const categoria = [
   "Componentes",
   "Seguridad",
 ];
+
 
 export default function CRUD({ onClose, dataSelect, accion }) {
   const [previewImage, setPreviewImage] = useState(null);
@@ -109,6 +111,7 @@ export default function CRUD({ onClose, dataSelect, accion }) {
             <X size={24} />
           </button>
         </div>
+
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
           {/* Campo Título */}
@@ -248,6 +251,7 @@ export default function CRUD({ onClose, dataSelect, accion }) {
           </div>
         </form>
       </div>
+
     </div>
   );
 }
