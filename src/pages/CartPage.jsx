@@ -3,21 +3,22 @@ import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Minus, Plus, Trash } from "lucide-react";
 import { removeFromCart, updateQuantity } from "../features/cart/cartSlice";
-import axios from 'axios';
+import axios from "axios";
 
 export default function CartPage() {
   const dispatch = useDispatch();
-  const cartItems = useSelector((state) => state.cart.items);
+  const cartItems = useSelector((state) => state.cart.items); // Aquí accedemos a cartItems
   const [productos, setProductos] = useState([]);
 
   useEffect(() => {
     // Obtener productos desde el backend
-    axios.get('http://localhost:4000/productos') // Ajusta la URL a tu servidor
-      .then(response => {
+    axios
+      .get("http://localhost:4000/productos") // Ajusta la URL a tu servidor
+      .then((response) => {
         setProductos(response.data);
       })
-      .catch(error => {
-        console.error('Error al obtener productos:', error);
+      .catch((error) => {
+        console.error("Error al obtener productos:", error);
       });
   }, []);
 
@@ -25,6 +26,35 @@ export default function CartPage() {
     (sum, item) => sum + item.precio * item.quantity,
     0
   );
+
+  const handleCrearOrden = async () => {
+    try {
+      if (cartItems.length === 0) {
+        alert("Tu carrito está vacío.");
+        return;
+      }
+
+      const nuevaOrden = {
+        items: cartItems.map(item => ({
+          producto: item._id,
+          cantidad: item.quantity,
+        })),
+        total: total,
+      };
+
+      const response = await axios.post("http://localhost:4000/orders", nuevaOrden);
+      console.log("Orden creada:", response.data);
+
+      // Opcional: puedes limpiar el carrito o redirigir
+      alert("¡Orden creada exitosamente!");
+      // dispatch(vaciarCarrito()); // Si deseas vaciar el carrito
+      // navigate('/pagina-de-confirmacion'); // Si quieres redirigir
+
+    } catch (error) {
+      console.error("Error al crear orden:", error);
+      alert("Error al procesar la orden");
+    }
+  };
 
   if (cartItems.length === 0) {
     return (
@@ -51,7 +81,10 @@ export default function CartPage() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         <div className="lg:col-span-2 shadow-md p-4 rounded-md">
           {cartItems.map((item) => (
-            <div key={item._id} className="flex items-center gap-4 py-4 border-b ">
+            <div
+              key={item._id}
+              className="flex items-center gap-4 py-4 border-b "
+            >
               <img
                 src={item.imageURL}
                 alt={item.titulo}
@@ -128,7 +161,10 @@ export default function CartPage() {
                 </div>
               </div>
             </div>
-            <button className="w-full bg-zinc-200 px-6 py-3 rounded-lg hover:bg-zinc-300">
+            <button
+              className="w-full bg-zinc-200 px-6 py-3 rounded-lg hover:bg-zinc-300"
+              onClick={handleCrearOrden} // Ahora la función está definida dentro del componente
+            >
               Proceder a verificar
             </button>
           </div>
