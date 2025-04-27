@@ -12,29 +12,24 @@ import Login from "./pages/Login";
 import Register from "./pages/Register";
 import { Provider } from "react-redux";
 import { store } from "./App/Store";
-import TablaCrud from "./pages/TablaCrud";
 import LoadingSpinner from "./assets/components/LoadingSpinner";
 import ErrorMessage from "./assets/components/ErrorMessage";
-
+import TablaCrud from "./pages/TablaCrud";
+import ProductoManager from "./assets/components/ProductoManager";
+import Sidebar from "./assets/components/Sidebar";
 
 function AppContent() {
   const location = useLocation();
-  const hideHeaderPaths = ["/login", "/register"];
-  const showHeader = !hideHeaderPaths.includes(location.pathname);
-  
+  const hideHeaderPaths = ["/login", "/register", "/crud"];  // Aseguramos que /crud también oculte el header
+  const showHeader = !hideHeaderPaths.includes(location.pathname);  // Mostrar solo si no estamos en /crud
+
   const [isLoading, setIsLoading] = React.useState(true);
   const [error, setError] = React.useState(null);
 
   React.useEffect(() => {
     const fetchData = async () => {
       try {
-        // Simulación de carga (elimínalo en producción)
-        await new Promise(resolve => setTimeout(resolve, 1000));
-        
-        // Aquí irían tus llamadas reales a API:
-        // const response = await fetch('/api/data');
-        // if (!response.ok) throw new Error('Error en la API');
-        
+        await new Promise((resolve) => setTimeout(resolve, 1000));
         setIsLoading(false);
       } catch (err) {
         setError(err.message);
@@ -56,7 +51,7 @@ function AppContent() {
   if (error) {
     return (
       <div className="flex items-center justify-center min-h-screen">
-        <ErrorMessage 
+        <ErrorMessage
           message={`Error: ${error}`}
           retry={() => window.location.reload()}
         />
@@ -66,18 +61,32 @@ function AppContent() {
 
   return (
     <>
+      {/* Mostrar Header solo si no estamos en /crud */}
       {showHeader && <Header />}
-      <Routes>
-        <Route path="/TablaCrud" element={<TablaCrud />} />
-        <Route path="/" element={<Home />} />
-        <Route path="/productos/:id" element={<Productos />} />
-        <Route path="/cart" element={<CartPage />} />
-        <Route path="/acerca" element={<Acerca />} />
-        <Route path="/faqs" element={<Faqs />} />
-        <Route path="/contacto" element={<Contacto />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
-      </Routes>
+
+      {/* Mostrar Sidebar solo en /crud */}
+      {location.pathname === "/crud" && <Sidebar />}
+
+      <div className="flex min-h-screen">
+        {/* Este div contiene el contenido de la página, con un padding solo en /crud */}
+        <div
+          className={`flex-grow transition-all ${location.pathname === "/crud" ? "pl-[220px]" : ""}`}
+        >
+          <Routes>
+            <Route path="/crud" element={<ProductoManager />} />
+            <Route path="/TablaCrud" element={<TablaCrud />} />
+            <Route path="/" element={<Home />} />
+            <Route path="/productos/:id" element={<Productos />} />
+            <Route path="/cart" element={<CartPage />} />
+            <Route path="/acerca" element={<Acerca />} />
+            <Route path="/faqs" element={<Faqs />} />
+            <Route path="/contacto" element={<Contacto />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
+          </Routes>
+        </div>
+      </div>
+
       <Footer />
     </>
   );

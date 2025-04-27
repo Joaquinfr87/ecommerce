@@ -1,23 +1,19 @@
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
-import { 
-  X, 
-  Save, 
-  Image as ImageIcon,
-  Type,
-  DollarSign,
-  List,
-  FileText
-} from "lucide-react";
-import { 
-  createProducto, 
-  updateProducto,
-  getAllProductos
-} from "../api/productoAPI";
+import { X, Save } from "lucide-react";
+import { createProducto, updateProducto } from "../api/productoAPI";
+
+const categoria = [
+  "Protección",
+  "Accesorios",
+  "Iluminación",
+  "Herramientas",
+  "Componentes",
+  "Seguridad",
+];
 
 export default function CRUD({ onClose, dataSelect, accion }) {
   const [previewImage, setPreviewImage] = useState(null);
-  const [categorias, setCategorias] = useState([]);
   const [loading, setLoading] = useState(false);
 
   const {
@@ -25,38 +21,25 @@ export default function CRUD({ onClose, dataSelect, accion }) {
     handleSubmit,
     formState: { errors },
     setValue,
-    watch
+    getValues,
   } = useForm({
     defaultValues: {
       titulo: "",
       precio: 0,
       categoria: "",
       descripcion: "",
-      imageURL: ""
-    }
+      imageURL: "",
+    },
   });
 
   useEffect(() => {
-    // Cargar categorías al montar el componente
-    const fetchCategorias = async () => {
-      try {
-        const response = await getAllProductos();
-        setCategorias(response.data);
-      } catch (error) {
-        console.error("Error al cargar Productos:", error);
-      }
-    };
-    
-    fetchCategorias();
-
-    // Si es edición, cargar datos del producto seleccionado
-    if (accion === "Editar" && dataSelect) {
-      setValue("titulo", dataSelect.titulo);
-      setValue("precio", dataSelect.precio);
-      setValue("categoria", dataSelect.categoria?.id);
-      setValue("descripcion", dataSelect.descripcion);
-      setValue("imageURL", dataSelect.imageURL);
-      setPreviewImage(dataSelect.imageURL);
+    if (accion === "Editar" && dataSelect && dataSelect._id) {
+      setValue("titulo", dataSelect.titulo || "");
+      setValue("precio", dataSelect.precio || 0);
+      setValue("categoria", dataSelect.categoria || "");
+      setValue("descripcion", dataSelect.descripcion || "");
+      setValue("imageURL", dataSelect.imageURL || "");
+      setPreviewImage(dataSelect.imageURL || null);
     }
   }, [dataSelect, accion, setValue]);
 
@@ -75,28 +58,37 @@ export default function CRUD({ onClose, dataSelect, accion }) {
   const onSubmit = async (data) => {
     setLoading(true);
     try {
-      const formData = new FormData();
-      formData.append("titulo", data.titulo);
-      formData.append("precio", data.precio);
-      formData.append("categoria", data.categoria);
-      formData.append("descripcion", data.descripcion);
-      
+      let payload;
+
       if (data.imageURL instanceof File) {
+        // Si el usuario subió un archivo
+        const formData = new FormData();
+        formData.append("titulo", data.titulo);
+        formData.append("precio", data.precio);
+        formData.append("categoria", data.categoria);
+        formData.append("descripcion", data.descripcion);
         formData.append("imagen", data.imageURL);
-      } else if (data.imageURL) {
-        formData.append("imageURL", data.imageURL);
+        payload = formData;
+      } else {
+        // Si el usuario pegó una URL
+        payload = {
+          titulo: data.titulo,
+          precio: data.precio,
+          categoria: data.categoria,
+          descripcion: data.descripcion,
+          imageURL: data.imageURL,
+        };
       }
 
-      if (accion === "Editar") {
-        await updateProducto(dataSelect.id, formData);
+      if (accion === "Editar" && dataSelect?._id) {
+        await updateProducto(dataSelect._id, payload);
       } else {
-        await createProducto(formData);
+        await createProducto(payload);
       }
-      
-      onClose(true); // Pasamos true para indicar éxito
+
+      onClose(true);
     } catch (error) {
-      console.error("Error al guardar el producto:", error);
-      // Aquí podrías mostrar un mensaje de error al usuario
+      console.error("Error al guardar producto:", error);
     } finally {
       setLoading(false);
     }
@@ -109,9 +101,10 @@ export default function CRUD({ onClose, dataSelect, accion }) {
           <h2 className="text-xl font-semibold dark:text-white">
             {accion === "Editar" ? "Editar Producto" : "Nuevo Producto"}
           </h2>
-          <button 
+          <button
             onClick={() => onClose(false)}
             className="text-gray-500 hover:text-gray-700 dark:hover:text-gray-300"
+            aria-label="Cerrar modal"
           >
             <X size={24} />
           </button>
@@ -120,89 +113,74 @@ export default function CRUD({ onClose, dataSelect, accion }) {
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
           {/* Campo Título */}
           <div>
-            <label className="block text-sm font-medium mb-1 dark:text-gray-300">
+            <label htmlFor="titulo" className="block text-sm font-medium mb-1 dark:text-gray-300">
               Título
             </label>
-            <div className="relative">
-              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <Type size={18} className="text-gray-400" />
-              </div>
-              <input
-                type="text"
-                className="pl-10 w-full rounded-lg border border-gray-300 dark:border-gray-600 p-2 dark:bg-gray-700 dark:text-white"
-                {...register("titulo", { required: "Este campo es requerido" })}
-              />
-            </div>
-            {errors.titulo && (
-              <p className="text-red-500 text-xs mt-1">{errors.titulo.message}</p>
-            )}
+            <input
+              id="titulo"
+              className="w-full p-2 rounded-lg border dark:bg-gray-700 dark:text-white"
+              {...register("titulo", {
+                required: "Ingrese un título",
+                minLength: { value: 3, message: "El título debe tener al menos 3 caracteres" },
+              })}
+            />
+            {errors.titulo && <p className="text-red-500 text-xs mt-1">{errors.titulo.message}</p>}
           </div>
 
           {/* Campo Precio */}
           <div>
-            <label className="block text-sm font-medium mb-1 dark:text-gray-300">
+            <label htmlFor="precio" className="block text-sm font-medium mb-1 dark:text-gray-300">
               Precio
             </label>
-            <div className="relative">
-              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <DollarSign size={18} className="text-gray-400" />
-              </div>
-              <input
-                type="number"
-                step="0.01"
-                className="pl-10 w-full rounded-lg border border-gray-300 dark:border-gray-600 p-2 dark:bg-gray-700 dark:text-white"
-                {...register("precio", { 
-                  required: "Este campo es requerido",
-                  min: { value: 0.01, message: "El precio debe ser mayor a 0" }
-                })}
-              />
-            </div>
-            {errors.precio && (
-              <p className="text-red-500 text-xs mt-1">{errors.precio.message}</p>
-            )}
+            <input
+              id="precio"
+              type="number"
+              step="0.01"
+              min="0"
+              className="w-full p-2 rounded-lg border dark:bg-gray-700 dark:text-white"
+              {...register("precio", {
+                required: "Ingrese un precio",
+                min: { value: 0, message: "El precio no puede ser negativo" },
+              })}
+            />
+            {errors.precio && <p className="text-red-500 text-xs mt-1">{errors.precio.message}</p>}
           </div>
 
           {/* Campo Categoría */}
           <div>
-            <label className="block text-sm font-medium mb-1 dark:text-gray-300">
+            <label htmlFor="categoria" className="block text-sm font-medium mb-1 dark:text-gray-300">
               Categoría
             </label>
-            <div className="relative">
-              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <List size={18} className="text-gray-400" />
-              </div>
-              <select
-                className="pl-10 w-full rounded-lg border border-gray-300 dark:border-gray-600 p-2 dark:bg-gray-700 dark:text-white"
-                {...register("categoria", { required: "Seleccione una categoría" })}
-              >
-                <option value="">Seleccione una categoría</option>
-                {categorias.map((cat) => (
-                  <option key={cat.id} value={cat.id}>
-                    {cat.descripcion}
-                  </option>
-                ))}
-              </select>
-            </div>
-            {errors.categoria && (
-              <p className="text-red-500 text-xs mt-1">{errors.categoria.message}</p>
-            )}
+            <select
+              id="categoria"
+              className="w-full p-2 rounded-lg border dark:bg-gray-700 dark:text-white"
+              {...register("categoria", { required: "Seleccione una categoría" })}
+            >
+              <option value="">Seleccione una categoría</option>
+              {categoria.map((cat) => (
+                <option key={`cat-${cat}`} value={cat}>
+                  {cat}
+                </option>
+              ))}
+            </select>
+            {errors.categoria && <p className="text-red-500 text-xs mt-1">{errors.categoria.message}</p>}
           </div>
 
           {/* Campo Descripción */}
           <div>
-            <label className="block text-sm font-medium mb-1 dark:text-gray-300">
+            <label htmlFor="descripcion" className="block text-sm font-medium mb-1 dark:text-gray-300">
               Descripción
             </label>
-            <div className="relative">
-              <div className="absolute inset-y-0 left-0 pl-3 pt-2 flex items-start pointer-events-none">
-                <FileText size={18} className="text-gray-400" />
-              </div>
-              <textarea
-                rows={3}
-                className="pl-10 w-full rounded-lg border border-gray-300 dark:border-gray-600 p-2 dark:bg-gray-700 dark:text-white"
-                {...register("descripcion")}
-              />
-            </div>
+            <textarea
+              id="descripcion"
+              className="w-full p-2 rounded-lg border dark:bg-gray-700 dark:text-white"
+              rows="4"
+              {...register("descripcion", {
+                required: "Ingrese una descripción",
+                minLength: { value: 10, message: "La descripción debe tener al menos 10 caracteres" },
+              })}
+            />
+            {errors.descripcion && <p className="text-red-500 text-xs mt-1">{errors.descripcion.message}</p>}
           </div>
 
           {/* Campo Imagen */}
@@ -210,45 +188,62 @@ export default function CRUD({ onClose, dataSelect, accion }) {
             <label className="block text-sm font-medium mb-1 dark:text-gray-300">
               Imagen
             </label>
-            <div className="relative">
-              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <ImageIcon size={18} className="text-gray-400" />
-              </div>
-              <input
-                type="file"
-                accept="image/*"
-                className="pl-10 w-full rounded-lg border border-gray-300 dark:border-gray-600 p-2 dark:bg-gray-700 dark:text-white"
-                onChange={handleImageChange}
-              />
-            </div>
-            {previewImage && (
-              <div className="mt-2">
-                <img 
-                  src={previewImage} 
-                  alt="Preview" 
-                  className="h-32 object-cover rounded-lg"
-                />
-              </div>
-            )}
+
+            {/* Input de archivo */}
+            <input
+              type="file"
+              accept="image/*"
+              className="w-full p-2 rounded-lg border dark:bg-gray-700 dark:text-white mb-2"
+              onChange={handleImageChange}
+            />
+
+            {/* Input de URL */}
+            <input
+              id="imageURL"
+              type="text"
+              placeholder="https://example.com/imagen.jpg"
+              className="w-full p-2 rounded-lg border dark:bg-gray-700 dark:text-white"
+              {...register("imageURL", {
+                required: "Ingrese una URL de imagen o suba un archivo",
+                pattern: {
+                  value: /^https?:\/\/.+/i,
+                  message: "Ingrese una URL válida",
+                },
+              })}
+              onChange={(e) => {
+                setValue("imageURL", e.target.value);
+                setPreviewImage(e.target.value);
+              }}
+            />
+            {errors.imageURL && <p className="text-red-500 text-xs mt-1">{errors.imageURL.message}</p>}
           </div>
 
-          {/* Botón Guardar */}
-          <div className="pt-2">
+          {/* Vista previa */}
+          {previewImage && (
+            <img
+              src={previewImage}
+              alt="Vista previa"
+              className="mt-2 h-32 object-contain mx-auto"
+            />
+          )}
+
+          {/* Botones */}
+          <div className="flex justify-end space-x-2">
+            <button
+              type="button"
+              onClick={() => onClose(false)}
+              className="px-4 py-2 rounded-lg border dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
+              disabled={loading}
+            >
+              Cancelar
+            </button>
             <button
               type="submit"
               disabled={loading}
-              className={`flex items-center justify-center w-full ${
-                loading ? 'bg-blue-400' : 'bg-blue-600 hover:bg-blue-700'
-              } text-white py-2 px-4 rounded-lg transition`}
+              className="px-4 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700 flex items-center disabled:opacity-50"
             >
-              {loading ? (
-                'Guardando...'
-              ) : (
-                <>
-                  <Save size={18} className="mr-2" />
-                  Guardar
-                </>
-              )}
+              <Save size={18} className="mr-2" />
+              {loading ? "Guardando..." : "Guardar"}
             </button>
           </div>
         </form>

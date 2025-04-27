@@ -32,23 +32,44 @@ export const getProductoById = async (id) => {
 
 export const createProducto = async (productoData) => {
   try {
-    const response = await axios.post(API_URL, productoData, formDataConfig);
+    let response;
+
+    if (productoData instanceof FormData) {
+      // Si es FormData, enviamos como multipart/form-data
+      response = await axios.post(API_URL, productoData, {
+        headers: { 'Content-Type': 'multipart/form-data' }
+      });
+    } else {
+      // Si es un objeto normal (no FormData), enviamos como JSON
+      response = await axios.post(API_URL, productoData);
+    }
+
     return response.data;
   } catch (error) {
-    console.error('Error al crear producto:', error);
+    console.error('Error al crear producto:', error.response?.data || error);
     throw error;
   }
 };
 
 export const updateProducto = async (id, productoData) => {
   try {
-    const response = await axios.put(`${API_URL}/${id}`, productoData, formDataConfig);
+    let response;
+
+    if (productoData instanceof FormData) {
+      response = await axios.put(`${API_URL}/${id}`, productoData, {
+        headers: { 'Content-Type': 'multipart/form-data' }
+      });
+    } else {
+      response = await axios.put(`${API_URL}/${id}`, productoData);
+    }
+
     return response.data;
   } catch (error) {
-    console.error(`Error al actualizar producto con ID ${id}:`, error);
+    console.error(`Error al actualizar producto con ID ${id}:`, error.response?.data || error);
     throw error;
   }
 };
+
 
 export const deleteProducto = async (id) => {
   try {
