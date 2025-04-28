@@ -20,7 +20,7 @@ export default function Login() {
 
   useEffect(() => {
     if (isLogged) {
-      navigate('/CRUD');
+      navigate('/crud');
     }
   }, [isLogged, navigate]);
 

@@ -19,8 +19,8 @@ export default function Home() {
 
   useEffect(() => {
     getAllProductos()  
-      .then(response => {
-        dispatch(setProducts(response.data));  
+      .then(productos => {
+        dispatch(setProducts(productos));  
       })
       .catch(error => {
         console.error('Error al obtener productos:', error);

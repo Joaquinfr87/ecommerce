@@ -7,7 +7,7 @@ import axios from "axios";
 
 const postOrder = async (orderData) => {
   try {
-    const response = await axios.post("http:localhost:4000/order", {
+    const response = await axios.post("http://localhost:4000/orders", {
       items: orderData.items.map((item) => ({
         _id: item._id,
         titulo: item.titulo,
@@ -27,6 +27,13 @@ const postOrder = async (orderData) => {
 };
 
 export default function CartPage() {
+  const dispatch = useDispatch();
+  const cartItems = useSelector((state) => state.cart.items);
+
+  const total = cartItems.reduce(
+    (sum, item) => sum + item.precio * item.quantity,
+    0
+  );
   const [loading, setLoading] = useState(false);
 
   const handleCheckout = async () => {
@@ -55,13 +62,6 @@ export default function CartPage() {
     }
   };
 
-  const dispatch = useDispatch();
-  const cartItems = useSelector((state) => state.cart.items);
-
-  const total = cartItems.reduce(
-    (sum, item) => sum + item.precio * item.quantity,
-    0
-  );
 
   if (cartItems.length === 0) {
     return (

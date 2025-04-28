@@ -1,7 +1,7 @@
 // src/api/api.js
 import axios from 'axios';
 
-const API_URL = 'http://localhost:4000/order'; // Asegúrate que sea la URL correcta de tu backend
+const API_URL = 'http://localhost:4000/orders'; // Asegúrate que sea la URL correcta de tu backend
 
 // Productos
 

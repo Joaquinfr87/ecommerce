@@ -1,11 +1,82 @@
-// src/api/api.js
 import axios from 'axios';
 
-const API_URL = 'http://localhost:4000/productos'; // Asegúrate que sea la URL correcta de tu backend
+const API_URL = 'http://localhost:4000/productos';
+
+// Configuración común para las solicitudes con FormData
+const formDataConfig = {
+  headers: {
+    'Content-Type': 'multipart/form-data'
+  }
+};
 
 // Productos
-export const getAllProductos = () => axios.get(`${API_URL}/`);
-export const getProductoById = (id) => axios.get(`${API_URL}/${id}`);
-export const createProducto = (producto) => axios.post(`${API_URL}/`, producto);
-export const updateProducto = (id, producto) => axios.put(`${API_URL}/${id}`, producto);
-export const deleteProducto = (id) => axios.delete(`${API_URL}/${id}`);
+export const getAllProductos = async () => {
+  try {
+    const response = await axios.get(API_URL);
+    return response.data;
+  } catch (error) {
+    console.error('Error al obtener productos:', error);
+    throw error;
+  }
+};
+
+export const getProductoById = async (id) => {
+  try {
+    const response = await axios.get(`${API_URL}/${id}`);
+    return response.data;
+  } catch (error) {
+    console.error(`Error al obtener producto con ID ${id}:`, error);
+    throw error;
+  }
+};
+
+export const createProducto = async (productoData) => {
+  try {
+    let response;
+
+    if (productoData instanceof FormData) {
+      // Si es FormData, enviamos como multipart/form-data
+      response = await axios.post(API_URL, productoData, {
+        headers: { 'Content-Type': 'multipart/form-data' }
+      });
+    } else {
+      // Si es un objeto normal (no FormData), enviamos como JSON
+      response = await axios.post(API_URL, productoData);
+    }
+
+    return response.data;
+  } catch (error) {
+    console.error('Error al crear producto:', error.response?.data || error);
+    throw error;
+  }
+};
+
+export const updateProducto = async (id, productoData) => {
+  try {
+    let response;
+
+    if (productoData instanceof FormData) {
+      response = await axios.put(`${API_URL}/${id}`, productoData, {
+        headers: { 'Content-Type': 'multipart/form-data' }
+      });
+    } else {
+      response = await axios.put(`${API_URL}/${id}`, productoData);
+    }
+
+    return response.data;
+  } catch (error) {
+    console.error(`Error al actualizar producto con ID ${id}:`, error.response?.data || error);
+    throw error;
+  }
+};
+
+
+export const deleteProducto = async (id) => {
+  try {
+    const response = await axios.delete(`${API_URL}/${id}`);
+    return response.data;
+  } catch (error) {
+    console.error(`Error al eliminar producto con ID ${id}:`, error);
+    throw error;
+  }
+};
