@@ -3,23 +3,60 @@ import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Minus, Plus, Trash } from "lucide-react";
 import { removeFromCart, updateQuantity } from "../features/cart/cartSlice";
-import axios from 'axios';
+import axios from "axios";
+
+const postOrder = async (orderData) => {
+  try {
+    const response = await axios.post("http:localhost:4000/order", {
+      items: orderData.items.map((item) => ({
+        _id: item._id,
+        titulo: item.titulo,
+        precio: item.precio,
+        quantity: item.quantity,
+      })),
+      total: orderData.total,
+      createdAt: orderData.createdAt || new Date(),
+    });
+
+    console.log("Pedido creado:", response.data);
+    return response.data;
+  } catch (error) {
+    console.error("Error al crear el pedido:", error);
+    throw error;
+  }
+};
 
 export default function CartPage() {
+  const [loading, setLoading] = useState(false);
+
+  const handleCheckout = async () => {
+    const newOrder = {
+      items: cartItems.map((item) => ({
+        _id: item._id,
+        titulo: item.titulo,
+        precio: item.precio,
+        quantity: item.quantity,
+      })),
+      createdAt: new Date(),
+      total: cartItems.reduce(
+        (sum, item) => sum + item.precio * item.quantity,
+        0
+      ),
+    };
+
+    try {
+      setLoading(true);
+      await postOrder(newOrder);
+      alert("Pedido creado correctamente!");
+    } catch (error) {
+      alert("Error al crear el pedido");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const dispatch = useDispatch();
   const cartItems = useSelector((state) => state.cart.items);
-  const [productos, setProductos] = useState([]);
-
-  useEffect(() => {
-    // Obtener productos desde el backend
-    axios.get('http://localhost:4000/productos') // Ajusta la URL a tu servidor
-      .then(response => {
-        setProductos(response.data);
-      })
-      .catch(error => {
-        console.error('Error al obtener productos:', error);
-      });
-  }, []);
 
   const total = cartItems.reduce(
     (sum, item) => sum + item.precio * item.quantity,
@@ -51,7 +88,10 @@ export default function CartPage() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         <div className="lg:col-span-2 shadow-md p-4 rounded-md">
           {cartItems.map((item) => (
-            <div key={item._id} className="flex items-center gap-4 py-4 border-b ">
+            <div
+              key={item._id}
+              className="flex items-center gap-4 py-4 border-b "
+            >
               <img
                 src={item.imageURL}
                 alt={item.titulo}
@@ -128,7 +168,9 @@ export default function CartPage() {
                 </div>
               </div>
             </div>
-            <button className="w-full bg-zinc-200 px-6 py-3 rounded-lg hover:bg-zinc-300">
+            <button className="w-full bg-zinc-200 px-6 py-3 rounded-lg hover:bg-zinc-300"
+            onClick={handleCheckout}
+            disabled={loading}>
               Proceder a verificar
             </button>
           </div>
