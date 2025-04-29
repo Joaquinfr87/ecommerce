@@ -59,7 +59,7 @@ export default function Header() {
               )}
 
               <li>
-                <Link to="/">Cuenta</Link>
+                <Link to="/crud">Cuenta</Link>
               </li>
             </div>
           </div>
