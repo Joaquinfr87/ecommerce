@@ -46,7 +46,7 @@ export default function Orden() {
   if (!order) return <p>No se encontró el pedido.</p>;
 
   return (
-    <div className="max-w-4xl mx-auto p-6 bg-white shadow-xl rounded-2xl">
+    <div className="max-w-4xl mx-auto px-6 my-12 py-10 bg-white shadow-xl rounded-2xl ">
       <h2 className="text-3xl font-bold mb-4 text-gray-800">Factura</h2>
       <div className="mb-6">
         <h3 className="text-lg text-gray-600">ID del pedido: <span className="font-semibold text-gray-800">#{order._id}</span></h3>
@@ -55,10 +55,10 @@ export default function Orden() {
   
       <div className="mb-8 bg-gray-100 p-4 rounded-lg">
         <h2 className="text-xl font-semibold mb-2 text-gray-700">Factura a:</h2>
-        <p className="text-gray-800">John Doe</p>
-        <p className="text-gray-800">Calle Falsa 123</p>
-        <p className="text-gray-800">john@example.com</p>
-        <p className="text-gray-800">+595 999 123 456</p>
+        <p className="text-gray-800">Nombre: John Doe</p>
+        <p className="text-gray-800">Dirección: Calle Falsa 123</p>
+        <p className="text-gray-800">Email: john@example.com</p>
+        <p className="text-gray-800">Telefono: +591 999 123 456</p>
         <p className="text-gray-800">CI: 1234567</p>
       </div>
   
