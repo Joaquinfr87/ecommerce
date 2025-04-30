@@ -1,12 +1,7 @@
 import { NavLink } from "react-router-dom";
-import { useState } from "react";
 import { 
   Home, 
   ShoppingCart, 
-  Info, 
-  HelpCircle, 
-  Mail, 
-  Box, 
   UserCog,
   ChevronRight,
   ChevronLeft
@@ -14,17 +9,11 @@ import {
 
 const LinksArray = [
   { icon: <Home size={20} />, label: "Inicio", to: "/" },
-  { icon: <Box size={20} />, label: "Productos", to: "/productos" },
   { icon: <ShoppingCart size={20} />, label: "Carrito", to: "/cart" },
-  { icon: <Info size={20} />, label: "Acerca de", to: "/acerca" },
-  { icon: <HelpCircle size={20} />, label: "FAQs", to: "/faqs" },
-  { icon: <Mail size={20} />, label: "Contacto", to: "/contacto" },
   { icon: <UserCog size={20} />, label: "Admin", to: "/crud" },
 ];
 
-export default function Sidebar() {
-  const [isOpen, setIsOpen] = useState(false);
-
+export default function Sidebar({ isOpen, setIsOpen }) {
   return (
     <div
       className={`transition-all duration-200 ease-in-out
@@ -40,7 +29,6 @@ export default function Sidebar() {
         {isOpen ? <ChevronLeft size={18} /> : <ChevronRight size={18} />}
       </button>
 
-      {/* Contenedor principal del sidebar */}
       <div className="flex flex-col pt-5">
         {/* Logo y título */}
         <div className="flex justify-center items-center pb-[60px]">
@@ -50,7 +38,6 @@ export default function Sidebar() {
           {isOpen && <h2 className="ml-2 font-semibold">Mi Tienda</h2>}
         </div>
 
-        {/* Links principales */}
         {LinksArray.map(({ icon, label, to }) => (
           <div className={`my-1 transition-all duration-300 ease-in-out relative px-1 ${isOpen ? "px-0" : "px-[5%]"} hover:bg-gray-100 dark:hover:bg-gray-700`} key={label}>
             <NavLink

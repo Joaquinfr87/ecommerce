@@ -26,11 +26,12 @@ function AppContent() {
 
   const [isLoading, setIsLoading] = React.useState(true);
   const [error, setError] = React.useState(null);
+  const [sidebarOpen, setSidebarOpen] = React.useState(true); // 👈 nuevo estado
 
   React.useEffect(() => {
     const fetchData = async () => {
       try {
-        await new Promise((resolve) => setTimeout(resolve, 1000)); // Simula loading
+        await new Promise((resolve) => setTimeout(resolve, 1000));
         setIsLoading(false);
       } catch (err) {
         setError(err.message);
@@ -57,13 +58,15 @@ function AppContent() {
     );
   }
 
+  const isCrudPath = location.pathname === "/crud";
+
   return (
     <>
       {showHeader && <Header />}
-      {location.pathname === "/crud" && <Sidebar />}
+      {isCrudPath && <Sidebar isOpen={sidebarOpen} setIsOpen={setSidebarOpen} />}
 
       <div className="flex min-h-screen">
-        <div className={`flex-grow transition-all ${location.pathname === "/crud" ? "pl-[220px]" : ""}`}>
+        <div className={`flex-grow transition-all duration-300 ${isCrudPath ? (sidebarOpen ? "pl-[220px]" : "pl-[65px]") : ""}`}>
           <Routes>
             <Route 
               path="/crud" 
@@ -81,7 +84,7 @@ function AppContent() {
             <Route path="/contacto" element={<Contacto />} />
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
-            <Route path="/orden/:id" element={<Orden />} /> {/* Agregado */}
+            <Route path="/orden/:id" element={<Orden />} />
           </Routes>
         </div>
       </div>
