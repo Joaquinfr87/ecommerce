@@ -32,7 +32,7 @@ export default function Home() {
       <NavBar />
       <div>
         <div className="bg"></div>
-        <div className="container mx-auto my-10 px-4 ">
+        <div className="conta iner mx-auto my-10 px-4 ">
           <div className="flex flex-wrap gap-4">
             {categoria.map((cat) => {
               return (

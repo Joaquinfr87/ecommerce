@@ -10,7 +10,7 @@ body {
 }
 
 .bg{
-    background: url("../public/productos/banner.jpg");
+    background: url("../src/assets/banner.jpg");
     background-size: cover;
     height: 65vh;
 }

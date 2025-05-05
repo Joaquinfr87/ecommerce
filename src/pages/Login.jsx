@@ -1,7 +1,7 @@
 import { useState,useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Lock, Mail, Home, LogIn, UserPlus, Key } from 'lucide-react';
-import bannerImage from '../../public/productos/banner.jpg';
+import bannerImage from '../assets/banner.jpg'; // Asegúrate de tener esta imagen en la ruta correcta
 import { useDispatch, useSelector } from 'react-redux';
 import { login } from '../features/auth/authSlice'; 
 
