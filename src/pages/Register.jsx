@@ -1,8 +1,9 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { User, Mail, Lock, Phone } from 'lucide-react';
 import { useDispatch, useSelector } from 'react-redux';
-import { register } from '../features/auth/authSlice'; 
+import { register } from '../features/auth/authSlice';
+import Swal from 'sweetalert2';
 
 export default function Register() {
   const [formData, setFormData] = useState({
@@ -17,7 +18,8 @@ export default function Register() {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const dispatch = useDispatch();
-  const { status, error } = useSelector(state => state.auth); // Obtener el estado de auth desde el store
+  const navigate = useNavigate();
+  const { status, error } = useSelector(state => state.auth);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -48,8 +50,22 @@ export default function Register() {
     }
 
     setIsSubmitting(true);
-    await dispatch(register(formData)); // Despachar la acción para registrar al usuario
+    const resultAction = await dispatch(register(formData));
     setIsSubmitting(false);
+
+    if (register.fulfilled.match(resultAction)) {
+      Swal.fire({
+        icon: 'success',
+        title: 'Cuenta creada',
+        text: 'Tu cuenta ha sido creada con éxito. Ahora puedes iniciar sesión.',
+        confirmButtonText: 'Ir al login',
+        customClass: {
+          confirmButton: 'bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700'
+        }
+      }).then(() => {
+        navigate('/login');
+      });
+    }
   };
 
   return (

@@ -1,13 +1,14 @@
-import { Link } from "react-router-dom";
+import { Link,useNavigate } from "react-router-dom";
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Minus, Plus, Trash } from "lucide-react";
 import { removeFromCart, updateQuantity } from "../features/cart/cartSlice";
-import axios from "axios";
+import {createOrder} from "../api/orderAPI";
+import Swal from "sweetalert2";
 
 const postOrder = async (orderData) => {
   try {
-    const response = await axios.post("http://localhost:4000/orders", {
+    const response = await createOrder({
       items: orderData.items.map((item) => ({
         _id: item._id,
         titulo: item.titulo,
@@ -29,6 +30,7 @@ const postOrder = async (orderData) => {
 export default function CartPage() {
   const dispatch = useDispatch();
   const cartItems = useSelector((state) => state.cart.items);
+  const navigate = useNavigate();
 
   const total = cartItems.reduce(
     (sum, item) => sum + item.precio * item.quantity,
@@ -53,8 +55,14 @@ export default function CartPage() {
 
     try {
       setLoading(true);
-      await postOrder(newOrder);
-      alert("Pedido creado correctamente!");
+      const createOrder = await postOrder(newOrder);
+
+      Swal.fire({
+        icon: "success",
+        title: "Sucess",
+        text: "Orden creada",
+      });
+      navigate(`/orden/${createOrder._id}`);
     } catch (error) {
       alert("Error al crear el pedido");
     } finally {
