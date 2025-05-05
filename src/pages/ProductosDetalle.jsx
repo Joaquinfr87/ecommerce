@@ -4,6 +4,7 @@ import { useDispatch } from "react-redux";
 import { Link, useParams } from "react-router-dom";
 import NavBar from "../assets/components/NavBar";
 import { addToCart } from '../features/cart/cartSlice';
+import { getProductoById } from "../api/productoAPI";
 import axios from 'axios';
 
 export default function ProductosDetalle() {
@@ -39,16 +40,15 @@ export default function ProductosDetalle() {
 
   return (
     <>
-      <NavBar />
       <div className="container mx-auto px-4 py-8 ">
         <div>
-          <Link to="/" className="mb-8 inline-block">
+          <Link to="/" className="mb-8 inline-block bg-gray-200 px-4 py-2 rounded-md hover:bg-gray-300">  
             Volver a Productos
           </Link>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
-          <div className="shadow-md p-4 * rounded w-[600px]">
-            <img src={product.imageURL} alt={product.titulo} />
+          <div className="shadow-md p-4 * rounded">
+            <img src={product.imageURL} alt={product.titulo} className="w-full h-auto rounded"/>
           </div>
           <div>
             <h1 className="text-3xl font-bold mb-4 ">{product.titulo}</h1>

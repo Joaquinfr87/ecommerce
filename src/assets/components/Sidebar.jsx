@@ -4,7 +4,8 @@ import {
   ShoppingCart, 
   UserCog,
   ChevronRight,
-  ChevronLeft
+  ChevronLeft,
+  Bike
 } from "lucide-react";
 
 const LinksArray = [
@@ -33,9 +34,9 @@ export default function Sidebar({ isOpen, setIsOpen }) {
         {/* Logo y título */}
         <div className="flex justify-center items-center pb-[60px]">
           <div className={`flex justify-center items-center w-[35px] cursor-pointer transition-all duration-300 ease ${isOpen ? "scale-75" : "scale-150"}`}>
-            <img src="/logo.png" className="w-full" alt="Logo" />
+            <Bike size={30} className="text-blue-600 dark:text-blue-400" />
           </div>
-          {isOpen && <h2 className="ml-2 font-semibold">Mi Tienda</h2>}
+          {isOpen && <h2 className="ml-2 font-semibold">TODO BICI MOTO</h2>}
         </div>
 
         {LinksArray.map(({ icon, label, to }) => (
