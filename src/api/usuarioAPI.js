@@ -1,7 +1,8 @@
 // src/api/usuarioApi.js
 import axios from 'axios';
+const VITE_API_URL = import.meta.env.VITE_API;
 
-const API_URL = 'http://localhost:4000/usuarios'; // cambia esto si tu backend está en otra dirección o puerto
+const API_URL = `${VITE_API_URL}:4000/usuarios`; // cambia esto si tu backend está en otra dirección o puerto
 
 export const registerUsuario = (usuarioData) => {
   return axios.post(`${API_URL}/register`, usuarioData);
