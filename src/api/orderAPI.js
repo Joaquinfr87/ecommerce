@@ -2,7 +2,7 @@
 import axios from 'axios';
 const VITE_API_URL = import.meta.env.VITE_API;
 
-const API_URL = `${VITE_API_URL}:4000/orders`; // Asegúrate que sea la URL correcta de tu backend
+const API_URL = `${VITE_API_URL}/orders`; // Asegúrate que sea la URL correcta de tu backend
 
 // Productos
 

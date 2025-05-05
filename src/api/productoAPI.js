@@ -1,7 +1,7 @@
 import axios from 'axios';
 const VITE_API_URL = import.meta.env.VITE_API;
 
-const API_URL = `${VITE_API_URL}:4000/productos`;
+const API_URL = `${VITE_API_URL}/productos`;
 
 // Configuración común para las solicitudes con FormData
 const formDataConfig = {

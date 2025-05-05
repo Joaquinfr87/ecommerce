@@ -64,7 +64,7 @@ ${order.items
     `;
 
     try {
-      const response = await fetch(`${API_URL}:4000/whatsapp/send`, {
+      const response = await fetch(`${API_URL}/whatsapp/send`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

@@ -16,7 +16,7 @@
 
     useEffect(() => {
       // Obtener el producto desde el backend
-      axios.get(`${API_URL}:4000/productos/${id}`)
+      axios.get(`${API_URL}/productos/${id}`)
         .then(response => {
           setProduct(response.data); // Guardamos el producto en el estado
         })
