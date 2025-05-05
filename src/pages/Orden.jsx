@@ -1,3 +1,4 @@
+const API_URL = import.meta.env.VITE_API;
 import React from "react";
 import { useParams } from "react-router-dom";
 import { useState, useEffect } from "react";
@@ -63,7 +64,7 @@ ${order.items
     `;
 
     try {
-      const response = await fetch("http://localhost:4000/whatsapp/send", {
+      const response = await fetch(`${API_URL}:4000/whatsapp/send`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
